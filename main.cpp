@@ -1,12 +1,12 @@
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 int main() {
 
     std::string nomFichierSrc;
     std::string nomFichierDst;
     char byte = 0;
-    unsigned long nombreLu = 0, nombreEcrit = 0;
 
     std::cout << "Donnez le nom du fichier source : ";
     std::cin >> nomFichierSrc;
@@ -28,18 +28,25 @@ int main() {
 
 
     while (fileLecture.get(byte)) {
-        nombreLu++;
         if(byte != 0x0D) {  // different Carrier Return
             fileEcriture.put(byte);
-            nombreEcrit++;
         }
     }
 
-    std::cout << "Taille fichier origine :  "<< nombreLu << std::endl;
-    std::cout << "Taille fichier destination :  "<< nombreEcrit << std::endl;
-    std::cout << nombreLu - nombreEcrit <<" octet(s) ont été supprimé." << std::endl;
     fileLecture.close();
     fileEcriture.close();
+
+    /** Calcul des tailles des fichiers
+     * Il faut fermer le fichier en écriture pour avoir accès à la taille
+     */
+
+
+    auto tailleSource = std::filesystem::file_size(nomFichierSrc);
+    auto tailleDestination = std::filesystem::file_size(nomFichierDst);
+
+    std::cout << "Taille fichier origine :  "<< tailleSource << std::endl;
+    std::cout << "Taille fichier destination :  " << tailleDestination << std::endl;
+    std::cout << tailleSource - tailleDestination <<" octet(s) ont été supprimé." << std::endl;
 
     return EXIT_SUCCESS;
 
